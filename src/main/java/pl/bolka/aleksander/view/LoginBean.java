@@ -2,8 +2,11 @@ package pl.bolka.aleksander.view;
 
 import org.apache.log4j.Logger;
 import org.omnifaces.cdi.ViewScoped;
+import pl.bolka.aleksander.service.authentication.LoginResult;
+import pl.bolka.aleksander.service.authentication.LoginService;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
@@ -17,13 +20,17 @@ public class LoginBean implements Serializable {
 
     private String password;
 
+    @Inject
+    private LoginService loginService;
+
     @PostConstruct
     public void init(){
-        logger.info("constructor");
+
     }
 
     public void loginAction(){
-        logger.info("login: " + login + ", password: " + password);
+        LoginResult result = loginService.login(login, password);
+
     }
 
     public String getLogin() {
