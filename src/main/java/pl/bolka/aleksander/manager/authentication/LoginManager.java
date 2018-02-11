@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
+import java.util.Optional;
 
 @Named
 @SessionScoped
@@ -18,16 +19,16 @@ public class LoginManager implements Serializable{
     @PersistenceContext
     private EntityManager em;
 
-    public User getUserByLogin(String login){
+    public Optional<User> getUserByLogin(String login){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<User> query = cb.createQuery(User.class);
         Root<User> root = query.from(User.class);
         query.select(root);
         query.where(cb.equal(root.get("login"),login));
         try{
-            return em.createQuery(query).getSingleResult();
+            return Optional.of(em.createQuery(query).getSingleResult());
         }catch (Exception ex){
-            return null;
+            return Optional.empty();
         }
     }
 

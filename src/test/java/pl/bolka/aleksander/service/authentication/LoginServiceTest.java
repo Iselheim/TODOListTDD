@@ -10,8 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import pl.bolka.aleksander.manager.authentication.LoginManager;
 import pl.bolka.aleksander.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -32,7 +31,9 @@ public class LoginServiceTest {
 
         User user = getUser();
 
-        Mockito.when(loginManager.getUserByLogin("login")).thenReturn(user);
+        Mockito.when(loginManager.getUserByLogin("login")).thenReturn(Optional.of(user));
+        Mockito.when(loginManager.getUserByLogin(null)).thenReturn(Optional.empty());
+        Mockito.when(loginManager.getUserByLogin("badLogin")).thenReturn(Optional.empty());
     }
 
     @Test
@@ -40,7 +41,7 @@ public class LoginServiceTest {
         LoginResult login = loginService.login(null, null);
         assertThat(login,is(not(nullValue())));
         assertThat(login.isSuccess(),is(false));
-        assertThat(login.getMessage(),is("Login jest pusty!"));
+        assertThat(login.getMessage(),is("Użytkownik nie istnieje"));
     }
 
     @Test
@@ -48,7 +49,7 @@ public class LoginServiceTest {
         LoginResult loginResult = loginService.login("login", null);
         assertThat(loginResult, is(not(nullValue())));
         assertThat(loginResult.isSuccess(),is(false));
-        assertThat(loginResult.getMessage(),is("Hasło jest puste!"));
+        assertThat(loginResult.getMessage(),is("Błędne hasło!"));
     }
 
     @Test
@@ -66,7 +67,7 @@ public class LoginServiceTest {
     }
 
     @Test
-    public void login_shouldReturnSuccesIfLoginAndPasswordAreCorrect(){
+    public void login_shouldReturnSuccessIfLoginAndPasswordAreCorrect(){
         LoginResult result = loginService.login("login", "password");
         assertThat(result.isSuccess(),is(true));
         assertThat(result.getMessage(),is("Zalogowano poprawnie"));
